@@ -1,3 +1,4 @@
+import java.util.Collections;
 import java.io.File;
 import java.io.FileReader;
 import java.io.BufferedReader;
@@ -49,12 +50,9 @@ public class frequency {
 	} 
 
 	ArrayList<Word> ft = freqTable(br);
-	for(int i=0; i <10; i++) {
-	    System.out.println(ft.get(i).word + ", " + ft.get(i).count);
-	}
 
-	writeCSV(ft, "freqtable.txt");
-	
+	writeCSV(ft, "tf.csv");
+	writeCSV(ft, "top10.csv",10);
     }
 
 
@@ -103,26 +101,48 @@ public class frequency {
 	    } catch (IOException e) { System.out.println("This should never happen");}
 	}
 
+	Collections.sort(table);
 	return table;
     }
 
     private static void writeCSV(ArrayList<Word> ft, String fn) {
 
-	File f = new File(fn);
 	PrintWriter pw = null;
 	
-	try(FileWriter fw = new FileWriter(f, true)) {
-	    pw = new PrintWriter(fw);
-	} catch(IOException e) {
+	try {
+	    pw = new PrintWriter(fn);
+	} catch(FileNotFoundException e) {
 	    System.out.println("Can't open a file for writing");
 	}
 	
 	// Write out the list of frequencies
 	for(Word w: ft) {
-	    System.out.println(w.word + ", " + w.count);
+
 	    pw.println(w.word + ", " + w.count);	   
 	}
+
+	pw.flush();
+	pw.close();
+    }
+    private static void writeCSV(ArrayList<Word> ft, String fn, int lines) {
+
+	PrintWriter pw = null;
 	
+	try {
+	    pw = new PrintWriter(fn);
+	} catch(FileNotFoundException e) {
+	    System.out.println("Can't open a file for writing");
+	}
+	
+	// Write out the list of frequencies
+
+	for(int i = 0; i < lines; i++) {
+
+	    Word w = ft.get(i);
+	    pw.println(w.word + ", " + w.count);	   
+	}
+
+	pw.flush();
 	pw.close();
     }
 }
