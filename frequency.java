@@ -68,6 +68,7 @@ public class frequency {
 	    while ((currentLine=br.readLine()) != null) {
 		// This is our definition of a word
 		// splitting the line on anything non
+		currentLine = currentLine.replace("--"," ");
 		String[] words = currentLine.split("[^A-Za-z'-]");
 		for ( String w: words ) {
 		    if (w.length() == 0) {
