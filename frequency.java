@@ -66,7 +66,9 @@ public class frequency {
 	
 	try {
 	    while ((currentLine=br.readLine()) != null) {
-		String[] words = currentLine.split("[^A-Za-z]");
+		// This is our definition of a word
+		// splitting the line on anything non
+		String[] words = currentLine.split("[^A-Za-z'-]");
 		for ( String w: words ) {
 		    if (w.length() == 0) {
 			break;
@@ -124,6 +126,7 @@ public class frequency {
 	pw.flush();
 	pw.close();
     }
+
     private static void writeCSV(ArrayList<Word> ft, String fn, int lines) {
 
 	PrintWriter pw = null;
