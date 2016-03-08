@@ -6,8 +6,8 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
-import java.util.List;
+// import java.util.Arrays;
+// import java.util.List;
 import java.util.ArrayList;
 import java.util.regex.*;
 
@@ -51,7 +51,7 @@ public class frequency {
 
 	ArrayList<Word> ft = freqTable(br);
 
-	writeCSV(ft, "tf.csv");
+	writeCSV(ft, "tf.csv", ft.size());
 	writeCSV(ft, "top10.csv",10);
     }
 
@@ -108,26 +108,6 @@ public class frequency {
 	return table;
     }
 
-    private static void writeCSV(ArrayList<Word> ft, String fn) {
-
-	PrintWriter pw = null;
-	
-	try {
-	    pw = new PrintWriter(fn);
-	} catch(FileNotFoundException e) {
-	    System.out.println("Can't open a file for writing");
-	}
-	
-	// Write out the list of frequencies
-	for(Word w: ft) {
-
-	    pw.println(w.word + ", " + w.count);	   
-	}
-
-	pw.flush();
-	pw.close();
-    }
-
     private static void writeCSV(ArrayList<Word> ft, String fn, int lines) {
 
 	PrintWriter pw = null;
@@ -149,4 +129,11 @@ public class frequency {
 	pw.flush();
 	pw.close();
     }
+
+    // Convenience function writes everything if we don't specify N
+    private static void writeCSV(ArrayList<Word> ft, String fn) {
+	writeCSV(ft,fn,ft.size());
+    }
+
+    
 }
