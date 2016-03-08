@@ -7,31 +7,34 @@ import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.SortedSet;
 import java.util.regex.*;
+import java.util.Set;
+import java.util.Comparator;
 
 public class frequency {
 
-    private static class Word implements Comparable<Word> {
-	String word;
-	int count;
-
-	public Word(String w, int c) {
-	    word=w;
-	    count=c;
+    public static Map<String, Integer> sortByValue(Map<String, Integer> map) {
+	List list = new LinkedList(map.entrySet());
+	Collections.sort(list, new Comparator() {
+		
+		public int compare(Object o2, Object o1) {
+		    return ((Comparable) ((Map.Entry) (o1)).getValue()) .compareTo(((Map.Entry) (o2)).getValue());
+		}
+	    });
+	Map result = new LinkedHashMap();
+	for (Iterator it = list.iterator(); it.hasNext();) {
+	    Map.Entry entry = (Map.Entry)it.next();
+	    result.put(entry.getKey(), entry.getValue());
 	}
-	
-	public boolean equals(Word w) {
-	    return word.equals(w);
-	}
-
-	public int incrementCount() {
-	    return ++this.count;
-	}
-
-	@Override
-	public int compareTo(Word w) {
-	    return w.count - count; 
-	}
+	return result;
     }
 
     public static void main (String[] args) {
@@ -66,25 +69,32 @@ public class frequency {
 	    return;
 	} 
 
-	ArrayList<Word> ft = freqTable(br);
+	Map<String, Integer> ft = freqTable(br);
 
-	writeCSV(ft, outFile, ft.size());
-	writeCSV(ft, topTen,10);
+	ft = sortByValue(ft);
+	
+	writeCSVHashMap(ft, outFile);
+	writeCSVHashMap(ft, topTen,10);
     }
 
 
-    private static ArrayList<Word> freqTable(BufferedReader br) {
+    private static HashMap<String, Integer> freqTable(BufferedReader br) {
 	// foreach word in War and Peace, if it is in the
 	// frequency table, increment frequency, otherwise
 	// add to the frequency table with frequency one
+
+	long startTime = System.currentTimeMillis();
+	
 	int total=0;
 	String currentLine=null;
-	ArrayList<Word> table = new ArrayList<Word>(); 
+	HashMap<String, Integer> table = new HashMap<String, Integer>(); 
 	
 	try {
 	    while ((currentLine=br.readLine()) != null) {
 		// This is our definition of a word
-		// splitting the line on anything non
+		// splitting the line on anything non wordy (alpha + ' and -)
+
+		// Double dashes are used in PG to represent an M dash -- for quotation
 		currentLine = currentLine.replace("--"," ");
 		String[] words = currentLine.split("[^A-Za-z'-]");
 		for ( String w: words ) {
@@ -94,20 +104,11 @@ public class frequency {
 
 		    w = w.toLowerCase();
 		    
-		    int found=0;
-		    // find w in table
-		    // if found, incrementCount
-		    for ( Word s: table) {
-			if(s.word.equals(w)) {
-			    s.incrementCount();
-			    found = 1;
-			    break;
-			}
-		    }
-		    
-		    if(found==0) {
-			// else, new Word(w,1) and add to table
-			table.add(new Word(w,1));
+		    // Find w in HashMap, if there, increment count, else add it
+		    if(table.get(w)==null) { // i.e. we didn't find it
+			table.put(w,1);
+		    } else {                 // i.e. We found it
+			table.put(w, table.get(w) + 1);
 		    }
 		}
 	    }
@@ -121,12 +122,13 @@ public class frequency {
 	    } catch (IOException e) { System.out.println("This should never happen");}
 	}
 
-	Collections.sort(table);
+	System.out.printf("Total time: %d ms\n",System.currentTimeMillis()-startTime);
 	return table;
     }
 
-    private static void writeCSV(ArrayList<Word> ft, String fn, int lines) {
-
+    // Rewritten to use HashMap
+    private static void writeCSVHashMap(Map<String, Integer> ft, String fn, int n) {
+	int counter=0;
 	PrintWriter pw = null;
 	
 	try {
@@ -134,23 +136,19 @@ public class frequency {
 	} catch(FileNotFoundException e) {
 	    System.out.println("Can't open a file for writing");
 	}
-	
-	// Write out the list of frequencies
-	System.out.printf("Writing to %s ... ",fn);
-	for(int i = 0; i < lines; i++) {
 
-	    Word w = ft.get(i);
-	    pw.println(w.word + ", " + w.count);	   
+	Set<String> words =  ft.keySet();
+	for(String word : words) {
+	    pw.println(word + ", " + ft.get(word));
+	    if(++counter==n) break;
 	}
 
 	pw.flush();
 	pw.close();
-	System.out.println("done!");
     }
 
-    // Convenience function writes everything if we don't specify N
-    private static void writeCSV(ArrayList<Word> ft, String fn) {
-	writeCSV(ft,fn,ft.size());
+    private static void writeCSVHashMap(Map<String, Integer> ft, String fn) {
+	writeCSVHashMap(ft, fn, ft.size());
     }
 
     
