@@ -6,8 +6,6 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.FileNotFoundException;
-// import java.util.Arrays;
-// import java.util.List;
 import java.util.ArrayList;
 import java.util.regex.*;
 
@@ -38,9 +36,28 @@ public class frequency {
 
     public static void main (String[] args) {
 	// Read in War and Peace
-	String inFile="pg2600.txt";
+	String inFile = "pg2600.txt";
+	String outFile = "tf.csv";
+	String topTen = "top10.csv";
 	FileReader fr = null;
 	BufferedReader br = null;
+	
+	if (args.length>0) {
+	    inFile = args[0];
+	}
+
+	if (args.length > 1) {
+	    outFile = args[1];
+	}
+
+	if (args.length == 2) {
+	    topTen = args[2];
+	}
+
+	if (args.length > 2) {
+	    System.out.println("Usage: java frequency [INPUT_FILE] [OUTPUT_FILE] [TOP_TEN_FILE]/n/n All parameters are optional.");
+	}
+
 	try {
 	    fr = new FileReader(inFile);
 	    br = new BufferedReader(fr);
@@ -51,8 +68,8 @@ public class frequency {
 
 	ArrayList<Word> ft = freqTable(br);
 
-	writeCSV(ft, "tf.csv", ft.size());
-	writeCSV(ft, "top10.csv",10);
+	writeCSV(ft, outFile, ft.size());
+	writeCSV(ft, topTen,10);
     }
 
 
@@ -119,7 +136,7 @@ public class frequency {
 	}
 	
 	// Write out the list of frequencies
-
+	System.out.printf("Writing to %s ... ",fn);
 	for(int i = 0; i < lines; i++) {
 
 	    Word w = ft.get(i);
@@ -128,6 +145,7 @@ public class frequency {
 
 	pw.flush();
 	pw.close();
+	System.out.println("done!");
     }
 
     // Convenience function writes everything if we don't specify N
