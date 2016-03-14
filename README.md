@@ -8,3 +8,8 @@ This is just a quick exercise in Java IO.
 
 There are plenty of definitions, but for this program now a word is Latin
 alphabet characters (plus "-" which is used in compounds and "'" for possessives) surrounded by non-alphabet characters.  However if we allow words to contain apostrophes then "ermalov's" is counted as a separate word from "ermalov" which seems suboptimal. I have taken this to be better than having "s" and "ll" counted as high-frequency English words, although I am open to debate on this.
+
+
+## Unit testing
+
+Use the command `javac -cp .:/wherever/your/system/has/junit4.jar *.java` to compile and `java -cp .:/usr/share/java/junit4.jar org.junit.runner.JUnitCore frequencyTest` to run the test suite.
